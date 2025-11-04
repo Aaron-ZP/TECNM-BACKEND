@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="LogoTecNMHorizontal_Blanco.png" alt="TecNM Logo" width="200"/>
+  <img src="Logo-TecNM-2017.png" alt="TecNM Logo" width="200"/>
  
 </p>
 
