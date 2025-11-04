@@ -6,7 +6,7 @@
 <h1 align="center">🚀 TECNM - BACKEND API</h1>
 
 <p align="center">
-  <strong>API REST desarrollada para el Tecnológico Nacional de México (TecNM)</strong><br>
+  <strong>API REST desarrollada por los alumnos Aaron Zaragoza, Julian y Juan Luis</strong><br>
   Sistema backend modular para la gestión de información académica, administrativa y de servicios.
 </p>
 
