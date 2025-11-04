@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="/workspaces/TECNM-BACKEND/LogoTecNMHorizontal_Blanco.png" alt="TecNM Logo" width="200"/>
+  <img src="LogoTecNMHorizontal_Blanco.png" alt="TecNM Logo" width="200"/>
+ 
 </p>
 
 <h1 align="center">🚀 TECNM - BACKEND API</h1>
