@@ -22,9 +22,9 @@ public class CategoriaDAO {
                 .list();
     }
     public Categoria obtenerCategoriaPorId(int id) {
-        String sql = "SELECT id, nombre FROM categorias WHERE id = :id";
+        String sql = "SELECT id, nombre FROM categorias WHERE id = ?";
         return jdbcClient.sql(sql)
-                .param("id", id)
+                .param(id)
                 .query(new CategoriaRM())
                 .single();
     }
