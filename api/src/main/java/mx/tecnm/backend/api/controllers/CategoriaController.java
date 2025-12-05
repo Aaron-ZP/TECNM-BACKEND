@@ -49,7 +49,6 @@ public class CategoriaController {
     Categoria categoriaCreada = repo.crearCategoria(nuevaCategoria);
         return ResponseEntity.ok(categoriaCreada);   
     
-    
     }
 
 }
