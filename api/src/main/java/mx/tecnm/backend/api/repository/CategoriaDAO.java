@@ -15,7 +15,7 @@ public class CategoriaDAO {
     private JdbcClient jdbcClient;
 
     public List<Categoria> obtenerCategorias() {
-        String sql = "SELECT id, nombre FROM categorias WHERE estado = true";
+        String sql = "SELECT id, nombre, estado FROM categorias WHERE estado = true";
         return jdbcClient.sql(sql)
                 .query(new CategoriaRM())
                 .list();
