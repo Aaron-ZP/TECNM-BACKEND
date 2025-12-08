@@ -9,8 +9,6 @@ public class CategoriaRM implements RowMapper<Categoria> {
 
 
 
-
-  
 @Override
     public Categoria mapRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
         return new Categoria(
