@@ -6,54 +6,64 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/metodos-pago")
 public class MetodosPagoController {
 
     @Autowired
-    MetodosPagoDAO repo;
+    private MetodosPagoDAO repo;
 
+    // 📌 CONSULTAR TODOS
     @GetMapping
-    public ResponseEntity<List<MetodosPago>> obtenerMetodosPagos() {
-        List<MetodosPago> resultado = repo.obtenerMetodosPago();
-        return ResponseEntity.ok(resultado);
+    public ResponseEntity<?> obtenerTodos() {
+        return ResponseEntity.ok(repo.obtenerMetodosPago());
     }
 
+    // 📌 CONSULTAR POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<MetodosPago> obtenerMetodosPagoPorId(@PathVariable int id){
-        Optional<MetodosPago> metodoPago = repo.obtenerMetodoPagoPorId(id);
-
-        return metodoPago.map(ResponseEntity::ok)
+    public ResponseEntity<?> obtenerPorId(@PathVariable int id) {
+        return repo.obtenerMetodoPagoPorId(id)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // 📌 CREAR CON PARAMS
     @PostMapping
-    public ResponseEntity<MetodosPago> crearMetodoPago(@RequestBody MetodosPago nuevoMetodo){
-        Optional<MetodosPago> creado = repo.crearMetodoPago(nuevoMetodo);
+    public ResponseEntity<?> crear(
+            @RequestParam String nombre,
+            @RequestParam(required = false) BigDecimal comision) {
 
-        return creado.map(ResponseEntity::ok)
+        MetodosPago nuevo = new MetodosPago(0, nombre, comision, true);
+
+        return repo.crearMetodoPago(nuevo)
+                .map(m -> ResponseEntity.created(URI.create("/metodos-pago/" + m.id())).body(m))
                 .orElseGet(() -> ResponseEntity.internalServerError().build());
     }
 
+    // 📌 ACTUALIZAR CON PARAMS
     @PutMapping("/{id}")
-    public ResponseEntity<MetodosPago> actualizarMetodoPago(@PathVariable int id, @RequestBody MetodosPago metodoPago) {
-        Optional<MetodosPago> actualizado = repo.actualizarMetodoPago(id, metodoPago);
+    public ResponseEntity<?> actualizar(
+            @PathVariable int id,
+            @RequestParam String nombre,
+            @RequestParam(required = false) BigDecimal comision) {
 
-        return actualizado.map(ResponseEntity::ok)
+        MetodosPago mp = new MetodosPago(id, nombre, comision, true);
+
+        return repo.actualizarMetodoPago(id, mp)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // 📌 ELIMINAR (BAJA LÓGICA)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarMetodoPago(@PathVariable int id){
-        Optional<MetodosPago> eliminado = repo.eliminarMetodoPago(id);
+    public ResponseEntity<?> eliminar(@PathVariable int id) {
+        boolean eliminado = repo.eliminarMetodoPago(id);
 
-        if (eliminado.isPresent()) {
-            return ResponseEntity.noContent().build(); // 204 No Content
-        } else {
-            return ResponseEntity.notFound().build(); // 404 Not Found
-        }
+        return eliminado
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

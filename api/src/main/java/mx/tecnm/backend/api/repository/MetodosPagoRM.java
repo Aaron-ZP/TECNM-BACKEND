@@ -13,7 +13,8 @@ public class MetodosPagoRM implements RowMapper<MetodosPago> {
         return new MetodosPago(
                 rs.getInt("id"),
                 rs.getString("nombre"),
-                rs.getBigDecimal("comision")
+                rs.getBigDecimal("comision"),
+                rs.getBoolean("estado")
         );
     }
 }

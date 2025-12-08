@@ -15,53 +15,64 @@ public class MetodosPagoDAO {
     @Autowired
     private JdbcClient jdbcClient;
 
+    private BigDecimal defaultComision(BigDecimal c) {
+        return (c != null) ? c : new BigDecimal("1.50");
+    }
+
     public List<MetodosPago> obtenerMetodosPago() {
-        String sql = "SELECT id, nombre, comision FROM metodos_pago";
+        String sql = "SELECT id, nombre, comision, estado FROM metodos_pago WHERE estado = TRUE";
         return jdbcClient.sql(sql).query(new MetodosPagoRM()).list();
     }
 
     public Optional<MetodosPago> obtenerMetodoPagoPorId(int id) {
-        String sql = "SELECT id, nombre, comision FROM metodos_pago WHERE id = ?";
+        String sql = "SELECT id, nombre, comision, estado FROM metodos_pago WHERE id = ? AND estado = TRUE";
         return jdbcClient.sql(sql)
                 .param(id)
                 .query(new MetodosPagoRM())
                 .optional();
     }
 
-    public Optional<MetodosPago> crearMetodoPago(MetodosPago nuevoMetodoPago) {
-        String sql = "INSERT INTO metodos_pago (nombre, comision) VALUES (?, ?) " +
-                "RETURNING id, nombre, comision";
-
-        BigDecimal comision = (nuevoMetodoPago.comision() != null)
-                ? nuevoMetodoPago.comision()
-                : new BigDecimal("1.50");
+    public Optional<MetodosPago> crearMetodoPago(MetodosPago mp) {
+        String sql = """
+            INSERT INTO metodos_pago (nombre, comision, estado)
+            VALUES (?, ?, TRUE)
+            RETURNING id, nombre, comision, estado
+        """;
 
         return jdbcClient.sql(sql)
-                .param(nuevoMetodoPago.nombre())
-                .param(comision)
+                .param(mp.nombre())
+                .param(defaultComision(mp.comision()))
                 .query(new MetodosPagoRM())
                 .optional();
     }
 
-    public Optional<MetodosPago> actualizarMetodoPago(int id, MetodosPago actualizadoMetodoPago) {
-        String sql = "UPDATE metodos_pago SET nombre = ?, comision = ? WHERE id = ? " +
-                "RETURNING id, nombre, comision";
+    public Optional<MetodosPago> actualizarMetodoPago(int id, MetodosPago mp) {
+        String sql = """
+            UPDATE metodos_pago 
+            SET nombre = ?, comision = ?
+            WHERE id = ?
+            RETURNING id, nombre, comision, estado
+        """;
 
         return jdbcClient.sql(sql)
-                .param(actualizadoMetodoPago.nombre())
-                .param(actualizadoMetodoPago.comision())
+                .param(mp.nombre())
+                .param(defaultComision(mp.comision()))
                 .param(id)
                 .query(new MetodosPagoRM())
                 .optional();
     }
 
-    public Optional<MetodosPago> eliminarMetodoPago(int id) {
-        String sql = "DELETE FROM metodos_pago WHERE id = ? " +
-                "RETURNING id, nombre, comision";
+    public boolean eliminarMetodoPago(int id) {
+        String sql = """
+            UPDATE metodos_pago 
+            SET estado = FALSE 
+            WHERE id = ? AND estado = TRUE
+        """;
 
-        return jdbcClient.sql(sql)
+        int filas = jdbcClient.sql(sql)
                 .param(id)
-                .query(new MetodosPagoRM())
-                .optional();
+                .update();
+
+        return filas > 0;
     }
 }
