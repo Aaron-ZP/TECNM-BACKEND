@@ -17,7 +17,8 @@ public class UsuarioRM implements RowMapper<Usuario> {
                 rs.getString("sexo"),
                 rs.getDate("fecha_nacimiento").toLocalDate(),
                 rs.getString("contrasena"),
-                rs.getDate("fecha_registro").toLocalDate()
+                rs.getDate("fecha_registro").toLocalDate(),
+                rs.getBoolean("activo") // ← importante
         );
     }
 }

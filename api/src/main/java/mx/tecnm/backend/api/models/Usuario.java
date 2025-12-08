@@ -10,5 +10,6 @@ public record Usuario(
         String sexo,
         LocalDate fecha_nacimiento,
         String contrasena,
-        LocalDate fecha_registro
+        LocalDate fecha_registro,
+        boolean activo // ← necesario para borrado lógico
 ) {}
