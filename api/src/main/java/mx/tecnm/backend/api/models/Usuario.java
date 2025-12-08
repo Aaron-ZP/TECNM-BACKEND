@@ -1,4 +1,4 @@
-package mx.tecnm.backend.api.api.models;
+package mx.tecnm.backend.api.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
-package mx.tecnm.backend.api.api.controllers;
+package mx.tecnm.backend.api.controllers;
 
-import mx.tecnm.backend.api.api.models.Usuario;
-import mx.tecnm.backend.api.api.repository.UsuarioDAO;
+import mx.tecnm.backend.api.models.Usuario;
+import mx.tecnm.backend.api.repository.UsuarioDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/usuarios")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
     @Autowired

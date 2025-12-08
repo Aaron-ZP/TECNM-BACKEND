@@ -1,6 +1,6 @@
-package mx.tecnm.backend.api.api.repository;
+package mx.tecnm.backend.api.repository;
 
-import mx.tecnm.backend.api.api.models.Usuario;
+import mx.tecnm.backend.api.models.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;

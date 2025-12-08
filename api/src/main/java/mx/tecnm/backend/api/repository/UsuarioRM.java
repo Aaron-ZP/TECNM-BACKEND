@@ -1,6 +1,6 @@
-package mx.tecnm.backend.api.api.repository;
+package mx.tecnm.backend.api.repository;
 
-import mx.tecnm.backend.api.api.models.Usuario;
+import mx.tecnm.backend.api.models.Usuario;
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
