@@ -1,4 +1,4 @@
-package mx.tecnm.backend.api.models;
+package mx.tecnm.backend.api.api.modells;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,8 +9,8 @@ public record Usuario(
         String email,
         String telefono,
         String sexo,
-        LocalDate fecha_nacimiento,
+        LocalDate fechaNacimiento,
         String contrasena,
-        LocalDateTime fecha_registro, // ← CAMBIO
-        boolean activo
+        LocalDateTime fechaRegistro,
+        boolean estado
 ) {}

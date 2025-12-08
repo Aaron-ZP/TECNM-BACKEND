@@ -1,25 +1,26 @@
-package mx.tecnm.backend.api.repository;
+package mx.tecnm.backend.api.api.repository;
 
-import mx.tecnm.backend.api.models.Usuario;
+import mx.tecnm.backend.api.api.modells.Usuario;
 import org.springframework.jdbc.core.RowMapper;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 public class UsuarioRM implements RowMapper<Usuario> {
 
     @Override
     public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {
+
         return new Usuario(
                 rs.getInt("id"),
                 rs.getString("nombre"),
                 rs.getString("email"),
                 rs.getString("telefono"),
                 rs.getString("sexo"),
-                rs.getDate("fecha_nacimiento") != null ? rs.getDate("fecha_nacimiento").toLocalDate() : null,
+                rs.getDate("fecha_nacimiento").toLocalDate(),
                 rs.getString("contrasena"),
-                rs.getTimestamp("fecha_registro") != null ? rs.getTimestamp("fecha_registro").toLocalDateTime() : null,
-                rs.getBoolean("activo")
+                rs.getTimestamp("fecha_registro").toLocalDateTime(),
+                rs.getBoolean("estado") // ← BOOLEAN REAL DE SUPABASE
         );
     }
 }

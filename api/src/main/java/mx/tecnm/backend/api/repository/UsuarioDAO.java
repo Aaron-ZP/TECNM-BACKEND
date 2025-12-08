@@ -1,73 +1,136 @@
-package mx.tecnm.backend.api.repository;
+package mx.tecnm.backend.api.api.repository;
 
-import mx.tecnm.backend.api.models.Usuario;
+import mx.tecnm.backend.api.api.modells.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UsuarioDAO {
 
     @Autowired
-    private JdbcClient jdbc;
+    private JdbcClient jdbcClient;
 
+    // LISTAR
     public List<Usuario> obtenerUsuarios() {
-        String sql = "SELECT * FROM usuarios WHERE activo = TRUE ORDER BY id";
-        return jdbc.sql(sql).query(new UsuarioRM()).list();
+        String sql = """
+                SELECT id, nombre, email, telefono, sexo, fecha_nacimiento,
+                       contrasena, fecha_registro, estado
+                FROM usuarios
+                WHERE estado = TRUE
+                ORDER BY id
+                """;
+
+        return jdbcClient.sql(sql).query(new UsuarioRM()).list();
     }
 
-    public Usuario obtenerUsuarioPorId(int id) {
-        String sql = "SELECT * FROM usuarios WHERE id = ? AND activo = TRUE";
-        return jdbc.sql(sql)
+    // OBTENER POR ID
+    public Optional<Usuario> obtenerUsuarioPorId(int id) {
+        String sql = """
+                SELECT id, nombre, email, telefono, sexo, fecha_nacimiento,
+                       contrasena, fecha_registro, estado
+                FROM usuarios
+                WHERE id = ? AND estado = TRUE
+                """;
+
+        return jdbcClient.sql(sql)
                 .param(id)
                 .query(new UsuarioRM())
-                .optional()
-                .orElse(null);
+                .optional();
     }
 
-    public Usuario crearUsuario(Usuario u) {
+    // OBTENER POR EMAIL
+    public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
         String sql = """
-                INSERT INTO usuarios (nombre, email, telefono, sexo, fecha_nacimiento, contrasena, fecha_registro, activo)
-                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, TRUE)
-                RETURNING *;
+                SELECT id, nombre, email, telefono, sexo, fecha_nacimiento,
+                       contrasena, fecha_registro, estado
+                FROM usuarios
+                WHERE email = ? AND estado = TRUE
                 """;
 
-        return jdbc.sql(sql)
+        return jdbcClient.sql(sql)
+                .param(email)
+                .query(new UsuarioRM())
+                .optional();
+    }
+
+    // CREAR
+    public Optional<Usuario> crearUsuario(Usuario u) {
+        String sql = """
+    INSERT INTO usuarios 
+    (nombre, email, telefono, sexo, fecha_nacimiento, contrasena, estado)
+    VALUES (?, ?, ?, ?::sexo_enum, ?, ?, TRUE)
+    RETURNING id, nombre, email, telefono, sexo, fecha_nacimiento,
+              contrasena, fecha_registro, estado
+    """;
+
+        return jdbcClient.sql(sql)
                 .param(u.nombre())
                 .param(u.email())
                 .param(u.telefono())
                 .param(u.sexo())
-                .param(u.fecha_nacimiento())
+                .param(u.fechaNacimiento())
                 .param(u.contrasena())
                 .query(new UsuarioRM())
-                .single();
+                .optional();
     }
 
-    public Usuario actualizarUsuario(Usuario u) {
+    // ACTUALIZAR (sin contraseña)
+    public Optional<Usuario> actualizarUsuario(int id, Usuario u) {
+       String sql = """
+    UPDATE usuarios
+    SET nombre = ?, email = ?, telefono = ?, sexo = ?::sexo_enum, fecha_nacimiento = ?
+    WHERE id = ? AND estado = TRUE
+    RETURNING id, nombre, email, telefono, sexo, fecha_nacimiento,
+              contrasena, fecha_registro, estado
+    """;
+
+
+        return jdbcClient.sql(sql)
+                .param(u.nombre())
+                .param(u.email())
+                .param(u.telefono())
+                .param(u.sexo())
+                .param(u.fechaNacimiento())
+                .param(id)
+                .query(new UsuarioRM())
+                .optional();
+    }
+
+    // CAMBIAR CONTRASEÑA
+    public Optional<Usuario> actualizarContrasena(int id, String nuevaContrasena) {
+     String sql = """
+    UPDATE usuarios
+    SET estado = FALSE
+    WHERE id = ?
+    RETURNING id, nombre, email, telefono, sexo, fecha_nacimiento,
+              contrasena, fecha_registro, estado
+    """;
+
+
+        return jdbcClient.sql(sql)
+                .param(nuevaContrasena)
+                .param(id)
+                .query(new UsuarioRM())
+                .optional();
+    }
+
+    // ELIMINAR (SOFT DELETE)
+    public Optional<Usuario> eliminarUsuario(int id) {
         String sql = """
                 UPDATE usuarios
-                SET nombre = ?, email = ?, telefono = ?, sexo = ?, fecha_nacimiento = ?, contrasena = ?
-                WHERE id = ? AND activo = TRUE
-                RETURNING *;
+                SET estado = FALSE
+                WHERE id = ?
+                RETURNING id, nombre, email, telefono, sexo, fecha_nacimiento,
+                          contrasena, fecha_registro, estado
                 """;
 
-        return jdbc.sql(sql)
-                .param(u.nombre())
-                .param(u.email())
-                .param(u.telefono())
-                .param(u.sexo())
-                .param(u.fecha_nacimiento())
-                .param(u.contrasena())
-                .param(u.id())
+        return jdbcClient.sql(sql)
+                .param(id)
                 .query(new UsuarioRM())
-                .optional()
-                .orElse(null);
-    }
-
-    public void eliminarUsuario(int id) {
-        String sql = "UPDATE usuarios SET activo = FALSE WHERE id = ?";
-        jdbc.sql(sql).param(id).update();
+                .optional();
     }
 }
