@@ -4,6 +4,7 @@ import mx.tecnm.backend.api.api.models.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository
@@ -12,28 +13,24 @@ public class UsuarioDAO {
     @Autowired
     private JdbcClient jdbc;
 
-    // ✔ Obtener solo activos
-    public List<Usuario> obtenerUsuariosActivos() {
-        String sql = "SELECT * FROM usuarios WHERE activo = true ORDER BY id";
+    public List<Usuario> obtenerUsuarios() {
+        String sql = "SELECT * FROM usuarios WHERE activo = TRUE ORDER BY id";
         return jdbc.sql(sql).query(new UsuarioRM()).list();
     }
 
-    // ✔ Obtener todos (incluye eliminados)
-    public List<Usuario> obtenerTodos() {
-        return jdbc.sql("SELECT * FROM usuarios ORDER BY id").query(new UsuarioRM()).list();
-    }
-
-    // ✔ Obtener por ID (solo activos)
     public Usuario obtenerUsuarioPorId(int id) {
-        String sql = "SELECT * FROM usuarios WHERE id = ? AND activo = true";
-        return jdbc.sql(sql).param(id).query(new UsuarioRM()).singleOrNull();
+        String sql = "SELECT * FROM usuarios WHERE id = ? AND activo = TRUE";
+        return jdbc.sql(sql)
+                .param(id)
+                .query(new UsuarioRM())
+                .optional()
+                .orElse(null);
     }
 
-    // ✔ Crear usuario
     public Usuario crearUsuario(Usuario u) {
         String sql = """
                 INSERT INTO usuarios (nombre, email, telefono, sexo, fecha_nacimiento, contrasena, fecha_registro, activo)
-                VALUES (?, ?, ?, ?, ?, ?, CURRENT_DATE, true)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, TRUE)
                 RETURNING *;
                 """;
 
@@ -44,15 +41,15 @@ public class UsuarioDAO {
                 .param(u.sexo())
                 .param(u.fecha_nacimiento())
                 .param(u.contrasena())
-                .query(new UsuarioRM()).single();
+                .query(new UsuarioRM())
+                .single();
     }
 
-    // ✔ Actualizar usuario
     public Usuario actualizarUsuario(Usuario u) {
         String sql = """
                 UPDATE usuarios
-                SET nombre=?, email=?, telefono=?, sexo=?, fecha_nacimiento=?, contrasena=?, activo=?
-                WHERE id=?
+                SET nombre = ?, email = ?, telefono = ?, sexo = ?, fecha_nacimiento = ?, contrasena = ?
+                WHERE id = ? AND activo = TRUE
                 RETURNING *;
                 """;
 
@@ -63,14 +60,14 @@ public class UsuarioDAO {
                 .param(u.sexo())
                 .param(u.fecha_nacimiento())
                 .param(u.contrasena())
-                .param(true)
                 .param(u.id())
-                .query(new UsuarioRM()).single();
+                .query(new UsuarioRM())
+                .optional()
+                .orElse(null);
     }
 
-    // 🔥 Borrado lógico – NO DELETE
-    public boolean eliminarUsuarioLogico(int id) {
-        String sql = "UPDATE usuarios SET activo=false WHERE id=? AND activo=true";
-        return jdbc.sql(sql).param(id).update() > 0;
+    public void eliminarUsuario(int id) {
+        String sql = "UPDATE usuarios SET activo = FALSE WHERE id = ?";
+        jdbc.sql(sql).param(id).update();
     }
 }

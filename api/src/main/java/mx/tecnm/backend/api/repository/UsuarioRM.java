@@ -4,6 +4,7 @@ import mx.tecnm.backend.api.api.models.Usuario;
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 public class UsuarioRM implements RowMapper<Usuario> {
 
@@ -15,10 +16,10 @@ public class UsuarioRM implements RowMapper<Usuario> {
                 rs.getString("email"),
                 rs.getString("telefono"),
                 rs.getString("sexo"),
-                rs.getDate("fecha_nacimiento").toLocalDate(),
+                rs.getDate("fecha_nacimiento") != null ? rs.getDate("fecha_nacimiento").toLocalDate() : null,
                 rs.getString("contrasena"),
-                rs.getDate("fecha_registro").toLocalDate(),
-                rs.getBoolean("activo") // ← importante
+                rs.getTimestamp("fecha_registro") != null ? rs.getTimestamp("fecha_registro").toLocalDateTime() : null,
+                rs.getBoolean("activo")
         );
     }
 }

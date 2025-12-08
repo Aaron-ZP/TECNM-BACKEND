@@ -1,6 +1,7 @@
 package mx.tecnm.backend.api.api.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record Usuario(
         int id,
@@ -10,6 +11,6 @@ public record Usuario(
         String sexo,
         LocalDate fecha_nacimiento,
         String contrasena,
-        LocalDate fecha_registro,
-        boolean activo // ← necesario para borrado lógico
+        LocalDateTime fecha_registro, // ← CAMBIO
+        boolean activo
 ) {}
