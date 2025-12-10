@@ -1,6 +1,7 @@
 package mx.tecnm.backend.api.repository;
 
 import mx.tecnm.backend.api.models.DetalleCarrito;
+import mx.tecnm.backend.api.models.PedidoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -128,7 +129,7 @@ public class DetalleCarritoDAO {
         limpiarCarrito(userId);
 
         // El total real lo calculará la base de datos, pero podemos mostrar un estimado aquí
-        return "Pedido generado exitosamente. ID: " + pedidoId + ". Tu número de orden es: " + orderNumber;
+        return "El pedido fue generado exitosamente. ID: " + pedidoId + ". Tu número de orden es: " + orderNumber;
     }
 
     public Optional<BigDecimal> obtenerPrecioProducto(int productoId) {

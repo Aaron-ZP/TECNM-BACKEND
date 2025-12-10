@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Modelo que representa un pedido realizado
+ * Modelo que representa un pedido leído desde la BD
  */
 public record Pedido(
         Integer id,
@@ -18,9 +18,4 @@ public record Pedido(
         LocalDateTime fechaHoraPago,
         BigDecimal importeIva,
         BigDecimal total
-) {
-    // Constructor para crear nuevo pedido
-    public Pedido(BigDecimal importeProductos, BigDecimal importeEnvio, Integer usuariosId, Integer metodosPagoId) {
-        this(null, null, null, importeProductos, importeEnvio, usuariosId, metodosPagoId, null, null, null);
-    }
-}
+) {}

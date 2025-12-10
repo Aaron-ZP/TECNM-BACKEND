@@ -33,12 +33,12 @@ public class CarritoController {
             Optional<BigDecimal> precioOpt = carritoDAO.obtenerPrecioProducto(request.productId());
 
             if (precioOpt.isEmpty()) {
-                return ResponseEntity.badRequest().body("Producto no encontrado o inactivo");
+                return ResponseEntity.badRequest().body("el Producto no fue encontrado o es inactivo");
             }
 
             carritoDAO.agregarOIncrementar(request.userId(), request.productId(), precioOpt.get());
 
-            return ResponseEntity.ok("Producto agregado/actualizado en el carrito");
+            return ResponseEntity.ok("El Producto fue agregado y actualizado en el carrito");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al agregar: " + e.getMessage());
         }
@@ -49,7 +49,7 @@ public class CarritoController {
     public ResponseEntity<String> removeFromCart(@PathVariable int userId, @PathVariable int productId) {
         try {
             carritoDAO.eliminarODecrementar(userId, productId);
-            return ResponseEntity.ok("Producto actualizado o eliminado del carrito");
+            return ResponseEntity.ok("El Producto fue actualizado o eliminado del carrito");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }

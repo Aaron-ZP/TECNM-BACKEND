@@ -1,73 +1,74 @@
 package mx.tecnm.backend.api.repository;
 
 import mx.tecnm.backend.api.models.Pedido;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.JdbcClient;
+import mx.tecnm.backend.api.models.PedidoRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Repositorio para manejar operaciones de pedidos
- */
 @Repository
 public class PedidoDAO {
 
-    @Autowired
-    private JdbcClient jdbcClient;
+    private final JdbcTemplate jdbcTemplate;
 
-    /**
-     * Crea un nuevo pedido
-     */
-    public Optional<Pedido> crearPedido(Pedido pedido) {
-// 1. Generamos el UUID del pedido aquí
-        UUID numeroPedido = UUID.randomUUID();
-
-
-
-        String sql = """
-INSERT INTO pedidos (importe_productos, importe_envio, usuarios_id, metodos_pago_id)
-            VALUES (?, ?, ?, ?)
-            RETURNING id, fecha, numero, importe_productos, importe_envio, 
-                      usuarios_id, metodos_pago_id, fecha_hora_pago, importe_iva, total
-        """;
-
-        return jdbcClient.sql(sql)
-                .param(pedido.importeProductos())
-                .param(pedido.importeEnvio())
-                .param(pedido.usuariosId())
-                .param(pedido.metodosPagoId())
-                .query((rs, rowNum) -> new Pedido(
-                        rs.getInt("id"),
-                        rs.getTimestamp("fecha").toLocalDateTime(),
-                        (java.util.UUID) rs.getObject("numero"),
-                        rs.getBigDecimal("importe_productos"),
-                        rs.getBigDecimal("importe_envio"),
-                        rs.getInt("usuarios_id"),
-                        rs.getInt("metodos_pago_id"),
-                        rs.getTimestamp("fecha_hora_pago") != null ?
-                                rs.getTimestamp("fecha_hora_pago").toLocalDateTime() : null,
-                        rs.getBigDecimal("importe_iva"),
-                        rs.getBigDecimal("total")
-                ))
-                .optional();
+    public PedidoDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
-     * Crea los detalles de un pedido desde el carrito
-     */
-    public int crearDetallesPedido(int pedidoId, int usuarioId) {
-        String sql = """
-            INSERT INTO detalles_pedido (cantidad, precio, productos_id, pedidos_id)
-            SELECT cantidad, precio, productos_id, ?
-            FROM detalles_carrito
-            WHERE usuarios_id = ?
-        """;
+    public Pedido crearPedido(PedidoRequest request) {
+        // Valores recibidos
+        BigDecimal importeProductos = request.importeProductos();
+        BigDecimal importeEnvio = request.importeEnvio();
 
-        return jdbcClient.sql(sql)
-                .param(pedidoId)
-                .param(usuarioId)
-                .update();
+        // Calcular IVA 16%
+        BigDecimal iva = importeProductos.multiply(new BigDecimal("0.16"));
+
+        // Calcular total
+        BigDecimal total = importeProductos.add(importeEnvio).add(iva);
+
+        // Generar número de pedido como UUID
+        UUID numero = UUID.randomUUID();
+
+        KeyHolder kh = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement("""
+                INSERT INTO pedidos 
+                (fecha, numero, importe_productos, importe_envio, usuarios_id, metodos_pago_id, fecha_hora_pago, importe_iva, total)
+                VALUES (NOW(), ?, ?, ?, ?, ?, NOW(), ?, ?)
+            """, Statement.RETURN_GENERATED_KEYS);
+
+            ps.setString(1, numero.toString());
+            ps.setBigDecimal(2, importeProductos);
+            ps.setBigDecimal(3, importeEnvio);
+            ps.setInt(4, request.usuariosId());
+            ps.setInt(5, request.metodosPagoId());
+            ps.setBigDecimal(6, iva);
+            ps.setBigDecimal(7, total);
+
+            return ps;
+        }, kh);
+
+        Integer id = kh.getKey().intValue();
+
+        return new Pedido(
+                id,
+                LocalDateTime.now(),
+                numero,
+                importeProductos,
+                importeEnvio,
+                request.usuariosId(),
+                request.metodosPagoId(),
+                LocalDateTime.now(),
+                iva,
+                total
+        );
     }
 }
