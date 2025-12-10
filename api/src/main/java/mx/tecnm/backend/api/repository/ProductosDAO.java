@@ -52,50 +52,35 @@ public class ProductosDAO {
     }
 
     //  ACTUALIZAR PRODUCTO
-    
-    public int actualizarProducto(int id, Productos p) {
-        String sql = """
-            UPDATE productos SET
-                nombre = :nombre,
-                sku = :sku,
-                color = :color,
-                marca = :marca,
-                descripcion = :descripcion,
-                precio = :precio,
-                peso = :peso,
-                alto = :alto,
-                ancho = :ancho,
-                profundidad = :profundidad,
-                categorias_id = :categoriasId,
-                estado = :estado
-            WHERE id = :id
-        """;
+    public Productos actualizarProducto(int id, Productos p) {
+        String sql = "UPDATE productos SET nombre = :nombre, precio = :precio, sku = :sku, color = :color, marca = :marca, descripcion = :descripcion, peso = :peso, alto = :alto, ancho = :ancho, profundidad = :profundidad, categorias_id = :categorias_id, estado = :estado  WHERE id = :id RETURNING id, nombre, precio, sku, color, marca, descripcion, peso, alto, ancho, profundidad, categorias_id, estado";
 
         return jdbcClient.sql(sql)
                 .param("id", id)
                 .param("nombre", p.nombre())
+                .param("precio", p.precio())
                 .param("sku", p.sku())
                 .param("color", p.color())
                 .param("marca", p.marca())
                 .param("descripcion", p.descripcion())
-                .param("precio", p.precio())
                 .param("peso", p.peso())
                 .param("alto", p.alto())
                 .param("ancho", p.ancho())
                 .param("profundidad", p.profundidad())
-                .param("categoriasId", p.categoriasId())
+                .param("categorias_id", p.categoriasId())
                 .param("estado", p.estado())
-                .update();
+                .query(new ProductosRM())
+                .single();
     }
 
-    // ==========================================================
     //  ELIMINAR PRODUCTO
-    // ==========================================================
-    public int eliminarProducto(int id) {
-        String sql = "DELETE FROM productos WHERE id = :id";
-
-        return jdbcClient.sql(sql)
-                .param("id", id)
+    public boolean cambiarEstadoProductos(int id, boolean estado) {
+        String sql = "UPDATE productos SET estado = ? WHERE id = ?";
+        int filas = jdbcClient.sql(sql)
+                .param(estado) // primer ?
+                .param(id) // segundo ?
                 .update();
+
+        return filas > 0;
     }
 }

@@ -18,11 +18,11 @@ public class UsuarioDAO {
     // LISTAR
     public List<Usuario> obtenerUsuarios() {
         String sql = """
-                SELECT id, nombre, email, telefono, sexo, fecha_nacimiento,
-                       contrasena, fecha_registro, estado
-                FROM usuarios
-                WHERE estado = TRUE
-                ORDER BY id
+                SELECT i      contrasena, fecha_registro, estado
+                        FROM usuarios
+                        WHERE estado = TRUE
+                        ORDER BY idd, nombre, email, telefono, sexo, fecha_nacimiento,
+                  
                 """;
 
         return jdbcClient.sql(sql).query(new UsuarioRM()).list();
