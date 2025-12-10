@@ -1,12 +1,13 @@
-package mx.tecnm.backend.api.api.repository;
+package mx.tecnm.backend.api.repository;
 
-import mx.tecnm.backend.api.api.modells.Usuario;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import mx.tecnm.backend.api.models.Usuario;
 
 @Repository
 public class UsuarioDAO {

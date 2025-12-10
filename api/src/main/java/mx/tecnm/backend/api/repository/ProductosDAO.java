@@ -14,77 +14,40 @@ public class ProductosDAO {
     @Autowired
     private JdbcClient jdbcClient;
 
-  
     //  OBTENER TODOS LOS PRODUCTOS
-    
-         public List<Productos> obtenerProductos() {
+    public List<Productos> obtenerProductos() {
         String sql = "SELECT id, nombre, precio,sku, color, marca, descripcion,  peso, alto, ancho, profundidad, categorias_id, estado FROM productos WHERE estado = true";
         return jdbcClient.sql(sql)
                 .query(new ProductosRM())
                 .list();
     }
 
-
-  
-
-
-    
     //  OBTENER PRODUCTO POR ID
-    
     public Productos obtenerProductoPorId(int id) {
-        String sql = """
-            SELECT 
-                id,
-                nombre,
-                sku,
-                color,
-                marca,
-                descripcion,
-                precio,
-                peso,
-                alto,
-                ancho,
-                profundidad,
-                categorias_id AS categoriasId,
-                estado
-            FROM productos
-            WHERE id = :id
-        """;
-
+        String sql = "SELECT id, nombre, precio, sku, color, marca, descripcion,  peso, alto, ancho, profundidad, categorias_id, estado FROM productos WHERE id = ? AND estado = true";
         return jdbcClient.sql(sql)
-                .param("id", id)
-                .query(Productos.class)
-                .single();
+                .param(id)
+                .query(new ProductosRM())
+                .optional()
+                .orElse(null);
     }
 
-    // ==========================================================
     //  CREAR PRODUCTO
-    // ==========================================================
-    public int crearProducto(Productos p) {
-        String sql = """
-            INSERT INTO productos
-                (nombre, sku, color, marca, descripcion, precio,
-                 peso, alto, ancho, profundidad, categorias_id, estado)
-            VALUES
-                (:nombre, :sku, :color, :marca, :descripcion, :precio,
-                 :peso, :alto, :ancho, :profundidad, :categoriasId, :estado)
-            RETURNING id
-        """;
-
+    public Productos crearProducto(String nuevoProducto) {
+        String sql = "INSERT INTO productos (nombre, precio, sku, color, marca, descripcion, peso, alto, ancho, profundidad, categorias_id, estado) VALUES (:nombre, :precio, :sku, :color, :marca, :descripcion, :peso, :alto, :ancho, :profundidad, :categorias_id, true) RETURNIG id, nombre, precio, sku, color, marca, descripcion, peso, alto, ancho, profundidad, categorias_id, estado";
         return jdbcClient.sql(sql)
-                .param("nombre", p.nombre())
-                .param("sku", p.sku())
-                .param("color", p.color())
-                .param("marca", p.marca())
-                .param("descripcion", p.descripcion())
-                .param("precio", p.precio())
-                .param("peso", p.peso())
-                .param("alto", p.alto())
-                .param("ancho", p.ancho())
-                .param("profundidad", p.profundidad())
-                .param("categoriasId", p.categoriasId())
-                .param("estado", p.estado())
-                .query(Integer.class)
+                .param("nombre", nuevoProducto)
+                .param("precio", nuevoProducto)
+                .param("sku", nuevoProducto)
+                .param("color", nuevoProducto)
+                .param("marca", nuevoProducto)
+                .param("descripcion", nuevoProducto)
+                .param("peso", nuevoProducto)
+                .param("alto", nuevoProducto)
+                .param("ancho", nuevoProducto)
+                .param("profundidad", nuevoProducto)
+                .param("categorias_id", nuevoProducto)
+                .query(new ProductosRM())
                 .single();
     }
 
@@ -137,5 +100,3 @@ public class ProductosDAO {
                 .update();
     }
 }
-
-

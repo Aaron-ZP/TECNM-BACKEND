@@ -1,10 +1,11 @@
-package mx.tecnm.backend.api.api.repository;
-
-import mx.tecnm.backend.api.api.modells.Usuario;
-import org.springframework.jdbc.core.RowMapper;
+package mx.tecnm.backend.api.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+
+import mx.tecnm.backend.api.models.Usuario;
 
 public class UsuarioRM implements RowMapper<Usuario> {
 

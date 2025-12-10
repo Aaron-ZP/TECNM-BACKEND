@@ -1,5 +1,4 @@
-package mx.tecnm.backend.api.api.modells;
-
+package mx.tecnm.backend.api.models;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -13,4 +12,6 @@ public record Usuario(
         String contrasena,
         LocalDateTime fechaRegistro,
         boolean estado
-) {}
+) {
+
+}

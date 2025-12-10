@@ -14,12 +14,16 @@ public class CategoriaDAO {
     @Autowired
     private JdbcClient jdbcClient;
 
+    //  OBTENER TODAS LAS CATEGORIAS
+
     public List<Categoria> obtenerCategorias() {
         String sql = "SELECT id, nombre, estado FROM categorias WHERE estado = true";
         return jdbcClient.sql(sql)
                 .query(new CategoriaRM())
                 .list();
     }
+
+    //  OBTENER CATEGORIA POR ID
 
     public Categoria obtenerCategoriaPorId(int id) {
         String sql = "SELECT id, nombre, estado FROM categorias WHERE id = ? AND estado = true";
