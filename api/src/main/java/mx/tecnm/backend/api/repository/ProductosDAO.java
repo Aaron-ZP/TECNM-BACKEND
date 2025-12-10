@@ -33,27 +33,26 @@ public class ProductosDAO {
     }
 
     //  CREAR PRODUCTO
-    public Productos crearProducto(String nuevoProducto) {
-        String sql = "INSERT INTO productos (nombre, precio, sku, color, marca, descripcion, peso, alto, ancho, profundidad, categorias_id, estado) VALUES (:nombre, :precio, :sku, :color, :marca, :descripcion, :peso, :alto, :ancho, :profundidad, :categorias_id, true) RETURNIG id, nombre, precio, sku, color, marca, descripcion, peso, alto, ancho, profundidad, categorias_id, estado";
+    public Productos crearProducto(Productos nuevoP) {
+        String sql = "INSERT INTO productos (nombre, precio, sku, color, marca, descripcion, peso, alto, ancho, profundidad, categorias_id, estado) VALUES (:nombre, :precio, :sku, :color, :marca, :descripcion, :peso, :alto, :ancho, :profundidad, :categorias_id, true) RETURNING id, nombre, precio, sku, color, marca, descripcion, peso, alto, ancho, profundidad, categorias_id, estado";
         return jdbcClient.sql(sql)
-                .param("nombre", nuevoProducto)
-                .param("precio", nuevoProducto)
-                .param("sku", nuevoProducto)
-                .param("color", nuevoProducto)
-                .param("marca", nuevoProducto)
-                .param("descripcion", nuevoProducto)
-                .param("peso", nuevoProducto)
-                .param("alto", nuevoProducto)
-                .param("ancho", nuevoProducto)
-                .param("profundidad", nuevoProducto)
-                .param("categorias_id", nuevoProducto)
+                .param("nombre", nuevoP.nombre())
+                .param("precio", nuevoP.precio())
+                .param("sku", nuevoP.sku())
+                .param("color", nuevoP.color())
+                .param("marca", nuevoP.marca())
+                .param("descripcion", nuevoP.descripcion())
+                .param("peso", nuevoP.peso())
+                .param("alto", nuevoP.alto())
+                .param("ancho", nuevoP.ancho())
+                .param("profundidad", nuevoP.profundidad())
+                .param("categorias_id", nuevoP.categoriasId())
                 .query(new ProductosRM())
                 .single();
     }
 
-    // ==========================================================
     //  ACTUALIZAR PRODUCTO
-    // ==========================================================
+    
     public int actualizarProducto(int id, Productos p) {
         String sql = """
             UPDATE productos SET

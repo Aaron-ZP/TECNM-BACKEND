@@ -1,8 +1,7 @@
 package mx.tecnm.backend.api.controllers;
+
 import java.util.List;
 import java.util.Optional;
-import mx.tecnm.backend.api.models.Usuario;
-import mx.tecnm.backend.api.repository.UsuarioDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-
+import mx.tecnm.backend.api.models.Usuario;
+import mx.tecnm.backend.api.repository.UsuarioDAO;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
@@ -52,7 +51,7 @@ public class UsuarioController {
     // ACTUALIZAR
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> actualizar(@PathVariable int id,
-                                              @RequestBody Usuario usuario) {
+            @RequestBody Usuario usuario) {
         Optional<Usuario> actualizado = repo.actualizarUsuario(id, usuario);
 
         return actualizado.map(ResponseEntity::ok)
